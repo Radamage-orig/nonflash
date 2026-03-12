@@ -1,0 +1,32 @@
+using Swed64;
+
+// init swed
+
+Swed swed = new Swed("cs2");
+
+// get client.dll
+
+IntPtr client = swed.GetModuleBase("client.dll");
+
+// now some offests 
+
+int dwLocalPlayerPawn = 0x2068B60;
+int m_flFlashBangTime = 0x15E4; 
+
+// anti flash loop
+
+while (true) // always run
+{
+    // current data
+    IntPtr localPlayerPawn = swed.ReadPointer(client, dwLocalPlayerPawn);
+
+    float flashDuration = swed.ReadFloat(localPlayerPawn, m_flFlashBangTime); // 0 -> 1
+
+    if (flashDuration > 0) // if flashed
+    {
+        swed.WriteFloat(localPlayerPawn, m_flFlashBangTime, 0); // remove flash
+        Console.WriteLine("Флешка отменяется!");
+    }
+
+    Thread.Sleep(2); // let cpu rest
+}
